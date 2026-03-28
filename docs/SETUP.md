@@ -2,6 +2,8 @@
 
 Complete installation guide for Diffron on Windows with AMD Lemonade and GitHub Desktop.
 
+**Diffron is a demo project showcasing the lemonade-python-sdk - submitted to the AMD Lemonade Developer Challenge 2026.**
+
 ---
 
 ## Table of Contents
@@ -40,54 +42,50 @@ git --version
 
 ---
 
-## Step 1: Install Lemonade
+## Step 1: Install AMD Lemonade Server
 
-AMD Lemonade is a local LLM server that Diffron uses for AI-powered commit messages.
+**Lemonade is AMD's local LLM server for Ryzen AI PCs.**
 
-### 1.1 Install lemonade-python-sdk
+### 1.1 Download Lemonade Installer
 
-Our Python SDK for AMD Lemonade:
+1. Go to [AMD Lemonade Releases](https://github.com/AMD-AI-Software/lemonade/releases)
+2. Download `Lemonade_Server_Installer.exe` (latest version)
+
+### 1.2 Install Lemonade
+
+1. Run the installer
+2. Follow the installation wizard
+3. Desktop shortcut `lemonade_server` will be created
+
+### 1.3 Start Lemonade and Download Model
+
+1. Double-click the `lemonade_server` desktop shortcut
+2. In the Lemonade UI, download a model (e.g., `qwen2.5-it-3b-FLM`)
+3. Server starts automatically on `http://localhost:8020`
+
+### 1.4 Verify Lemonade is Running
+
+```bash
+curl http://localhost:8020/api/v1/models
+```
+
+📚 **Official Documentation:** [AMD Ryzen AI - Lemonade Setup](https://ryzenai.docs.amd.com/en/latest/llm/server_interface.html)
+
+---
+
+## Step 2: Install lemonade-python-sdk
+
+**Our Python SDK for AMD Lemonade API - AMD Lemonade Challenge Submission**
 
 ```bash
 pip install lemonade-sdk
 ```
 
-### 1.2 Download Model
-
-Diffron uses `qwen2.5-it-3b-FLM` by default. Download it via Lemonade:
-
-```bash
-# Using Lemonade CLI
-lemonade pull qwen2.5-it-3b-FLM
-
-# Or via Python
-python -c "from lemonade_sdk import pull; pull('qwen2.5-it-3b-FLM')"
-```
-
-### 1.3 Start Lemonade Server
-
-```bash
-# Start Lemonade with the model
-lemonade serve qwen2.5-it-3b-FLM
-```
-
-**Default Configuration:**
-- **URL:** `http://localhost:8020`
-- **Port:** `8020`
-- **Model:** `qwen2.5-it-3b-FLM`
-
-### 1.4 Verify Lemonade is Running
-
-```bash
-# Test connection
-curl http://localhost:8020/api/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -d "{\"model\": \"qwen2.5-it-3b-FLM\", \"messages\": [{\"role\": \"user\", \"content\": \"Hello\"}]}"
-```
+🔗 **Source:** [github.com/Tetramatrix/lemonade-python-sdk](https://github.com/Tetramatrix/lemonade-python-sdk)
 
 ---
 
-## Step 2: Install Diffron
+## Step 4: Install Diffron
 
 ### Option A: From PyPI (Recommended)
 
@@ -99,7 +97,7 @@ pip install diffron
 
 ```bash
 # Clone repository
-git clone https://github.com/diffron/diffron.git
+git clone https://github.com/Tetramatrix/diffron.git
 cd diffron
 
 # Install in development mode
@@ -114,9 +112,9 @@ python -c "import diffron; print(f'Diffron v{diffron.__version__}')"
 
 ---
 
-## Step 3: Configure Environment
+## Step 5: Configure Environment
 
-### 3.1 Set Lemonade Server URL (System-Wide)
+### 5.1 Set Lemonade Server URL (System-Wide)
 
 **Method 1: Windows Environment Variables (Permanent)**
 
@@ -141,7 +139,7 @@ set LEMONADE_SERVER_URL=http://localhost:8020
 $env:LEMONADE_SERVER_URL="http://localhost:8020"
 ```
 
-### 3.2 Optional: Set Custom Model
+### 5.2 Optional: Set Custom Model
 
 ```cmd
 # System-wide (permanent)
@@ -151,7 +149,7 @@ setx DIFFRON_MODEL "qwen2.5-it-3b-FLM"
 set DIFFRON_MODEL=qwen2.5-it-3b-FLM
 ```
 
-### 3.3 Verify Environment Variables
+### 5.3 Verify Environment Variables
 
 ```bash
 # Check LEMONADE_SERVER_URL
@@ -163,11 +161,11 @@ echo %DIFFRON_MODEL%
 
 ---
 
-## Step 4: Install Git Hooks
+## Step 6: Install Git Hooks
 
 Git hooks enable automatic commit message generation.
 
-### 4.1 Global Installation (All Repositories)
+### 6.1 Global Installation (All Repositories)
 
 **Recommended for most users.**
 
@@ -177,7 +175,7 @@ python -c "from diffron.git_hooks import install_hooks; install_hooks(global_ins
 
 This installs hooks to `C:\Users\YourName\.diffron-hooks` and configures Git globally.
 
-### 4.2 Per-Repository Installation
+### 6.2 Per-Repository Installation
 
 For specific repositories only:
 
@@ -186,7 +184,7 @@ cd path\to\your\repository
 python -c "from diffron.git_hooks import install_hooks; install_hooks(repo_path='.')"
 ```
 
-### 4.3 Verify Hooks Installation
+### 6.3 Verify Hooks Installation
 
 ```bash
 # Check global hooks path
@@ -197,9 +195,9 @@ git config --global core.hooksPath
 
 ---
 
-## Step 5: Verify Installation
+## Step 7: Verify Installation
 
-### 5.1 Run Status Check
+### 7.1 Run Status Check
 
 ```bash
 python -c "from diffron import is_lemonade_running, is_hooks_installed; print('Lemonade:', is_lemonade_running()); print('Hooks:', is_hooks_installed(check_global=True))"
@@ -211,7 +209,7 @@ Lemonade: True
 Hooks: True
 ```
 
-### 5.2 Test Commit Message Generation
+### 7.2 Test Commit Message Generation
 
 ```bash
 # Create a test repository

@@ -1,6 +1,8 @@
 # Diffron
 
-Git commit message and PR description generator using Lemonade.
+Git commit message and PR description generator using AMD Lemonade via lemonade-python-sdk.
+
+**This is a demo project showcasing the lemonade-python-sdk - submitted to the AMD Lemonade Developer Challenge 2026.**
 
 ![Version](https://img.shields.io/badge/version-0.1.0-blue)
 ![Python](https://img.shields.io/badge/python-3.9+-blue)
@@ -22,40 +24,53 @@ Git commit message and PR description generator using Lemonade.
 
 ## Quick Start
 
-### 1. Install Lemonade
+### 1. Install AMD Lemonade Server
+
+**Lemonade is AMD's local LLM server for Ryzen AI PCs.**
+
+1. Download the installer from [AMD Lemonade Releases](https://github.com/AMD-AI-Software/lemonade/releases)
+2. Run `Lemonade_Server_Installer.exe`
+3. Launch Lemonade Server from the desktop shortcut
+4. Download a model via the Lemonade UI (e.g., `qwen2.5-it-3b-FLM`)
+
+📚 **Documentation:** [AMD Ryzen AI - Lemonade Setup](https://ryzenai.docs.amd.com/en/latest/llm/server_interface.html)
+
+### 2. Install lemonade-python-sdk
+
+**Our Python SDK for AMD Lemonade API:**
 
 ```bash
 pip install lemonade-sdk
-lemonade pull qwen2.5-it-3b-FLM
-lemonade serve qwen2.5-it-3b-FLM
 ```
 
-### 2. Set Environment Variable
+🔗 **Source:** [github.com/Tetramatrix/lemonade-python-sdk](https://github.com/Tetramatrix/lemonade-python-sdk)
 
-**Permanent (recommended):**
+### 3. Configure Environment
+
+**Set Lemonade Server URL (Permanent):**
 1. System Properties → Environment Variables
 2. New User Variable:
    - Name: `LEMONADE_SERVER_URL`
    - Value: `http://localhost:8020`
 
-**Temporary (current session):**
+**Or Temporary (current session):**
 ```cmd
 set LEMONADE_SERVER_URL=http://localhost:8020
 ```
 
-### 3. Install Diffron
+### 4. Install Diffron
 
 ```bash
 pip install diffron
 ```
 
-### 4. Install Git Hooks
+### 5. Install Git Hooks
 
 ```bash
 python -c "from diffron.git_hooks import install_hooks; install_hooks(global_install=True)"
 ```
 
-### 5. Test It
+### 6. Test It
 
 ```bash
 # Make a change
@@ -181,14 +196,20 @@ client = DiffronClient(model="your-model-name")
 
 ## Related Projects
 
+### Tetramatrix Projects
+
 | Project | Description |
 |---------|-------------|
+| **lemonade-python-sdk** | 🍋 **AMD Lemonade Challenge Submission** - Python SDK for AMD Lemonade API |
+| **Diffron** | Demo project showcasing lemonade-python-sdk (this repo) |
 | **Aicono** | AI Assistant (Desktop App) |
 | **TabNeuron** | Browser Connector / Memory |
 | **Sorana** | Advanced AI Interface |
 | **RyzenPilot** | Hardware Optimization |
 
-**Note:** Lemonade is AMD's local LLM server. Diffron uses the `lemonade-python-sdk` to communicate with Lemonade's API.
+**Note:** Lemonade is AMD's local LLM server for Ryzen AI PCs. Diffron uses `lemonade-python-sdk` to communicate with Lemonade's API.
+
+🏆 **AMD Lemonade Developer Challenge 2026:** This project demonstrates the capabilities of lemonade-python-sdk as a real-world application built on AMD Lemonade.
 
 ---
 
