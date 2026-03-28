@@ -38,6 +38,7 @@ setup(
     install_requires=[
         "openai>=1.0.0",
         "psutil>=5.9.0",
+        "lemonade-sdk>=1.0.0",
     ],
     extras_require={
         "git": ["gitpython>=3.1.0"],

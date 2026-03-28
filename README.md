@@ -83,6 +83,7 @@ Expected output:
 | Python | 3.9+ | Runtime |
 | Git | 2.0+ | Version control |
 | GitHub Desktop | 3.5.5+ | Git GUI (Windows) |
+| lemonade-sdk | Latest | AMD Lemonade API client |
 | Lemonade | Latest | Local LLM server |
 
 ### Full Installation Guide
@@ -186,7 +187,6 @@ client = DiffronClient(model="your-model-name")
 | **TabNeuron** | Browser Connector / Memory |
 | **Sorana** | Advanced AI Interface |
 | **RyzenPilot** | Hardware Optimization |
-| **lemonade-python-sdk** | Python SDK for AMD Lemonade API |
 
 **Note:** Lemonade is AMD's local LLM server. Diffron uses the `lemonade-python-sdk` to communicate with Lemonade's API.
 
