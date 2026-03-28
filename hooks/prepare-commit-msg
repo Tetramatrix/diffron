@@ -1,0 +1,8 @@
+#!/C:/Program Files/Git/usr/bin/sh.exe
+# Diffron prepare-commit-msg hook wrapper
+# This file should be placed in .git/hooks/prepare-commit-msg (no extension)
+
+# Get the directory where this wrapper script is located
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+python "$HOOK_DIR/prepare-commit-msg.py" "$1" "$2"
+exit 0
