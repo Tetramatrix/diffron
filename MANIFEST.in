@@ -1,0 +1,17 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+include requirements.txt
+include pyproject.toml
+
+recursive-include diffron *.py *.pyi py.typed
+recursive-include diffron/hooks *
+recursive-include docs *.md
+
+exclude tests
+exclude hooks
+exclude *.bat
+exclude *.code-workspace
+exclude sync-*.txt
+exclude .gitignore
+exclude .sorana

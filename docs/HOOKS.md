@@ -164,13 +164,18 @@ C:\Users\YourName\.diffron-hooks\
 #### prepare-commit-msg (Shell Wrapper)
 
 ```bash
-#!/C:/Program Files/Git/usr/bin/sh.exe
-# Diffron prepare-commit-msg hook wrapper
+#!/bin/sh
+# Diffron prepare-commit-msg hook wrapper for Windows (Git Bash)
 
-# Get the directory where this wrapper script is located
-HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
-python "$HOOK_DIR/prepare-commit-msg.py" "$1" "$2"
-exit 0
+# Get the directory where this wrapper script is located (Unix-style path)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Convert Unix path to Windows path for Python using cygpath
+# Git Bash on Windows uses /d/... but Windows needs D:\...
+PYTHON_SCRIPT="$(cygpath -w "$SCRIPT_DIR/prepare-commit-msg.py" 2>/dev/null || echo "$SCRIPT_DIR/prepare-commit-msg.py")"
+
+# Run the Python script
+python "$PYTHON_SCRIPT" "$1" "$2"
 ```
 
 **Purpose:** Git for Windows executes this shell script, which delegates to Python.
@@ -179,6 +184,7 @@ exit 0
 - Git for Windows uses bundled Git Bash
 - Python may not be in Git Bash PATH
 - Wrapper ensures correct Python interpreter is used
+- **cygpath** converts Unix-style paths (`/d/...`) to Windows paths (`D:\...`)
 
 #### prepare-commit-msg.py (Python Hook)
 
@@ -417,6 +423,102 @@ git commit -m "test"
 
 ---
 
+## Troubleshooting
+
+### Hooks werden nicht ausgeführt
+
+**Symptom:** `git commit` öffnet den Editor ohne generierte Message.
+
+**Ursache 1: Lokaler `core.hooksPath` überschreibt globalen Wert**
+
+```bash
+# Prüfen ob lokaler hooksPath gesetzt ist
+git config core.hooksPath
+
+# Wenn Output leer ist ("core.hooksPath="), wurde er auf leer gesetzt
+# Das deaktiviert Hooks komplett!
+
+# Lösung: Lokalen Wert entfernen
+git config --unset core.hooksPath
+
+# Verifizieren: Sollte jetzt keinen Output geben
+git config core.hooksPath
+```
+
+**Ursache 2: Backup hat fehlerhafte Konfiguration wiederhergestellt**
+
+Nach dem Einspielen eines Backups kann die `.git/config` einen leeren `core.hooksPath=` enthalten.
+
+**Lösung nach Backup:**
+```bash
+cd path/to/repo
+git config --unset core.hooksPath
+git commit  # Testen ob Hook funktioniert
+```
+
+**Ursache 3: Wrapper-Pfad-Konvertierung fehlgeschlagen**
+
+Der Shell-Wrapper muss Unix-Pfade (`/d/...`) zu Windows-Pfaden (`D:\...`) konvertieren.
+
+**Lösung:** Stelle sicher dass der Wrapper `cygpath` verwendet:
+```bash
+#!/bin/sh
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PYTHON_SCRIPT="$(cygpath -w "$SCRIPT_DIR/prepare-commit-msg.py" 2>/dev/null || echo "$SCRIPT_DIR/prepare-commit-msg.py")"
+python "$PYTHON_SCRIPT" "$1" "$2"
+```
+
+### Lemonade antwortet nicht / ist langsam
+
+**Symptom:** Hook schreibt keine Message, Commit erfordert manuelle Eingabe.
+
+**Ursache:** Lemonade Server ist nicht erreichbar oder antwortet zu langsam.
+
+**Lösung:**
+1. Prüfen ob Lemonade läuft: `http://localhost:8020` im Browser öffnen
+2. Hook-Timeout erhöhen (Standard: 10 Sekunden):
+   ```python
+   # In prepare-commit-msg.py
+   def is_lemonade_api_responsive(url: str, timeout: float = 10.0) -> bool:
+   ```
+
+### "No staged changes" Fehler im Log
+
+**Symptom:** Hook wird ausgeführt, aber generiert keine Message.
+
+**Ursache:** Der Hook prüft den git diff im aktuellen Arbeitsverzeichnis, nicht im Hook-Kontext.
+
+**Lösung:** Der Hook wechselt automatisch ins Repository-Verzeichnis. Stelle sicher dass:
+```python
+# Change to the repository directory
+repo_dir = os.path.dirname(os.path.abspath(commit_msg_file))
+if os.path.basename(repo_dir) == ".git":
+    repo_dir = os.path.dirname(repo_dir)
+os.chdir(repo_dir)
+```
+
+### Globale vs. Lokale Hooks
+
+**Frage:** Soll ich globale oder lokale Hooks verwenden?
+
+**Empfehlung:** Verwende **globale Hooks** für konsistentes Verhalten:
+```bash
+git config --global core.hooksPath "C:/Users/YourName/.diffron-hooks"
+```
+
+**Vorteile:**
+- Einmal installieren, überall verfügbar
+- Backup von `.git/config` beeinflusst Hooks nicht
+- Konsistentes Verhalten über alle Repositories
+
+**Nach Backup prüfen:**
+```bash
+git config --global core.hooksPath  # Sollte Pfad anzeigen
+git config core.hooksPath           # Sollte leer sein (kein Output)
+```
+
+---
+
 ## Hook Lifecycle
 
 ### Installation
@@ -438,5 +540,5 @@ git commit -m "test"
 
 ---
 
-*Last updated: 2026-03-28*
+*Last updated: 2026-03-29*
 *Version: 0.1.0*

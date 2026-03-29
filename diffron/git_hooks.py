@@ -19,7 +19,7 @@ PYTHON_HOOK_NAME = "prepare-commit-msg.py"
 
 # Get the hooks directory (where the template hooks are stored)
 DIFFRON_PACKAGE_DIR = Path(__file__).parent
-HOOKS_TEMPLATE_DIR = DIFFRON_PACKAGE_DIR.parent / "hooks"
+HOOKS_TEMPLATE_DIR = DIFFRON_PACKAGE_DIR / "hooks"
 
 
 def install_hooks(

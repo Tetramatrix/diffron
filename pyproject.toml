@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "diffron"
-version = "0.1.0"
+version = "0.1.1"
 description = "Git commit message and PR description generator using Lemonade"
 readme = "README.md"
 license = {text = "MIT"}
@@ -55,10 +55,11 @@ Documentation = "https://github.com/diffron/diffron/docs"
 Repository = "https://github.com/diffron/diffron"
 
 [tool.setuptools.packages.find]
-exclude = ["tests", "hooks"]
+exclude = ["tests"]
 
 [tool.setuptools.package-data]
 diffron = ["py.typed"]
+"diffron.hooks" = ["*"]
 
 [tool.black]
 line-length = 100
