@@ -200,12 +200,12 @@ client = DiffronClient(model="your-model-name")
 
 | Project | Description |
 |---------|-------------|
-| **lemonade-python-sdk** | 🍋 **AMD Lemonade Challenge Submission** - Python SDK for AMD Lemonade API |
+| [**lemonade-python-sdk**](https://github.com/Tetramatrix/lemonade-python-sdk) | 🍋 **AMD Lemonade Challenge Submission** - Python SDK for AMD Lemonade API |
 | **Diffron** | Demo project showcasing lemonade-python-sdk (this repo) |
-| **Aicono** | AI Assistant (Desktop App) |
-| **TabNeuron** | Browser Connector / Memory |
-| **Sorana** | Advanced AI Interface |
-| **RyzenPilot** | Hardware Optimization |
+| [**Aicono**](https://tetramatrix.github.io/Aicono/) | AI Assistant (Desktop App) |
+| [**TabNeuron**](https://tetramatrix.github.io/TabNeuron/) | Browser Connector / Memory |
+| [**Sorana**](https://tetramatrix.github.io/Sorana/) | Advanced AI Interface |
+| [**RyzenZPilot**](https://tetramatrix.github.io/RyzenZPilot/) | Hardware Optimization |
 
 **Note:** Lemonade is AMD's local LLM server for Ryzen AI PCs. Diffron uses `lemonade-python-sdk` to communicate with Lemonade's API.
 
