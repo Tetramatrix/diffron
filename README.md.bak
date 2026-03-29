@@ -201,7 +201,7 @@ client = DiffronClient(model="your-model-name")
 | Project | Description |
 |---------|-------------|
 | [**lemonade-python-sdk**](https://github.com/Tetramatrix/lemonade-python-sdk) | 🍋 **AMD Lemonade Challenge Submission** - Python SDK for AMD Lemonade API |
-| [**Diffron**](https://pypi.org/project/diffron/) | Demo project showcasing lemonade-python-sdk (this repo) |
+| **Diffron** | Demo project showcasing lemonade-python-sdk (this repo) |
 | [**Aicono**](https://tetramatrix.github.io/Aicono/) | AI Assistant (Desktop App) |
 | [**TabNeuron**](https://tetramatrix.github.io/TabNeuron/) | Browser Connector / Memory |
 | [**Sorana**](https://tetramatrix.github.io/Sorana/) | Advanced AI Interface |
