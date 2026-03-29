@@ -1,0 +1,5 @@
+[console_scripts]
+diffron-install-hooks = diffron.cli:install_hooks_cli
+diffron-pr = diffron.cli:pr_description_cli
+diffron-status = diffron.cli:status_cli
+diffron-uninstall-hooks = diffron.cli:uninstall_hooks_cli

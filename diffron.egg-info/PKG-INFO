@@ -1,3 +1,46 @@
+Metadata-Version: 2.4
+Name: diffron
+Version: 0.1.2
+Summary: Git commit message and PR description generator using Lemonade
+Home-page: https://github.com/diffron/diffron
+Author: Diffron Contributors
+Author-email: Diffron Contributors <diffron@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/diffron/diffron
+Project-URL: Documentation, https://github.com/diffron/diffron/docs
+Project-URL: Repository, https://github.com/diffron/diffron
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Version Control :: Git
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: openai>=1.0.0
+Requires-Dist: psutil>=5.9.0
+Provides-Extra: git
+Requires-Dist: gitpython>=3.1.0; extra == "git"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
+Dynamic: requires-python
+
 # Diffron
 
 Git commit message and PR description generator using AMD Lemonade via lemonade-python-sdk.
