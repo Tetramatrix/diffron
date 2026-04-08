@@ -4,6 +4,7 @@ Commit message generation for Diffron.
 Generates Conventional Commits format messages from git diffs.
 """
 
+import re
 import os
 from typing import Optional
 
@@ -91,6 +92,10 @@ def generate_commit_message(
 
     # Clean up response
     commit_message = response.strip()
+
+    # Strip thinking/reasoning tags (e.g. from thinking models)
+    commit_message = re.sub(r"<think>.*?</think>", "", commit_message, flags=re.DOTALL)
+    commit_message = commit_message.replace("<think>", "").replace("</think>", "").strip()
 
     # Remove any surrounding quotes
     if commit_message.startswith('"') and commit_message.endswith('"'):

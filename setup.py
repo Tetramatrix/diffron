@@ -10,7 +10,7 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="diffron",
-    version="0.1.2",
+    version="0.1.3",
     author="Diffron Contributors",
     author_email="diffron@example.com",
     description="Git commit message and PR description generator using Lemonade",
@@ -55,6 +55,7 @@ setup(
             "diffron-uninstall-hooks=diffron.cli:uninstall_hooks_cli",
             "diffron-pr=diffron.cli:pr_description_cli",
             "diffron-status=diffron.cli:status_cli",
+            "diffron-setup-model=diffron.models:setup_model_cli",
         ],
     },
     include_package_data=True,

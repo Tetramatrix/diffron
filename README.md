@@ -4,7 +4,7 @@ Git commit message and PR description generator using AMD Lemonade via lemonade-
 
 **Diffron is a production-ready reference implementation of the lemonade-python-sdk — submitted to the AMD Lemonade Developer Challenge 2026.**
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-0.1.3-blue)
 ![Python](https://img.shields.io/badge/python-3.9+-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
@@ -18,7 +18,7 @@ Git commit message and PR description generator using AMD Lemonade via lemonade-
 - 🔌 **Lemonade Integration** - Works with your local Lemonade LLM server (no cloud required)
 - 🪟 **Windows Ready** - Fully compatible with GitHub Desktop 3.5.5+ hooks support
 - ⚡ **Auto-Detection** - Automatically finds your running Lemonade instance
-- 🎯 **Model Flexible** - Use any Lemonade-compatible model (default: qwen2.5-it-3b-FLM)
+- 🎯 **Curated Models** - Easy model selection with recommended models for different tasks
 
 ---
 
@@ -31,7 +31,7 @@ Git commit message and PR description generator using AMD Lemonade via lemonade-
 1. Download the installer from [AMD Lemonade Releases](https://github.com/AMD-AI-Software/lemonade/releases)
 2. Run `Lemonade_Server_Installer.exe`
 3. Launch Lemonade Server from the desktop shortcut
-4. Download a model via the Lemonade UI (e.g., `qwen2.5-it-3b-FLM`)
+4. Download a model via the Lemonade UI (e.g., `qwen3.5-0.8b-gguf` - the new default!)
 
 📚 **Documentation:** [AMD Ryzen AI - Lemonade Setup](https://ryzenai.docs.amd.com/en/latest/llm/server_interface.html)
 
@@ -62,6 +62,51 @@ set LEMONADE_SERVER_URL=http://localhost:8020
 
 ```bash
 pip install diffron
+```
+
+### 5. Setup Model (Important!)
+
+**Diffron comes with curated models. The default model works out of the box.**
+
+**Default model:** `qwen2.5-it-3b-FLM` (included with Lemonade)
+
+**To use a different model:**
+
+```bash
+# List all curated models
+diffron-setup-model --list
+
+# Set a specific model (sets DIFFRON_MODEL env var permanently)
+diffron-setup-model --model qwen3.5-0.8b-gguf
+
+# Reset to default
+diffron-setup-model
+```
+
+**Or via Python API:**
+
+```python
+from diffron import list_available_models, get_default_model
+
+# List all curated models
+models = list_available_models()
+for model in models:
+    print(f"{model.name}: {model.description}")
+
+# Get default model
+default = get_default_model()
+print(f"Default: {default.name}")
+```
+
+**Or manually via environment variable:**
+
+```cmd
+# Temporary (current session)
+set DIFFRON_MODEL=qwen3.5-0.8b-gguf
+
+# Permanent (System Properties → Environment Variables)
+# Name: DIFFRON_MODEL
+# Value: qwen3.5-0.8b-gguf
 ```
 
 ### 5. Install Git Hooks
@@ -163,14 +208,28 @@ client.install_hooks(global_install=True)
 | `DIFFRON_MODEL` | `qwen2.5-it-3b-FLM` | Model name to use |
 | `DIFFRON_MAX_DIFF_CHARS` | `4000` | Max diff characters |
 
+### Curated Models
+
+Diffron comes with a collection of curated models optimized for different use cases:
+
+| Model ID | Description | Parameters | Best For |
+|----------|-------------|------------|----------|
+| **qwen2.5-it-3b-FLM** ⭐ | Qwen 2.5 IT — Default, reliable | 3B | Commit messages, PR descriptions |
+| qwen3.5-0.8b-gguf | Qwen 3.5 — Lightweight & fast | 0.8B | Quick commits, low-resource PCs |
+| qwen2.5-7b-gguf | Qwen 2.5 — Larger model | 7B | Complex analysis, code review |
+| llama-3.2-3b-gguf | Llama 3.2 — Alternative | 3B | General purpose |
+
 ### Change Model
 
-```cmd
-# System-wide
-setx DIFFRON_MODEL "qwen2.5-coder-7b"
+```bash
+# Set a curated model
+diffron-setup-model --model qwen3.5-0.8b-gguf
 
-# Current session
-set DIFFRON_MODEL=qwen2.5-coder-7b
+# List available models
+diffron-setup-model --list
+
+# Or manually (system-wide)
+setx DIFFRON_MODEL "qwen3.5-0.8b-gguf"
 ```
 
 ### Python API
@@ -178,8 +237,15 @@ set DIFFRON_MODEL=qwen2.5-coder-7b
 ```python
 from diffron import DiffronClient
 
-# Use different model
-client = DiffronClient(model="your-model-name")
+# Use a curated model by name
+client = DiffronClient(model="qwen2.5-7b-gguf")
+
+# Get model configuration
+from diffron import get_model_config
+config = get_model_config("qwen3.5-0.8b-gguf")
+if config:
+    print(f"Best for: {config.best_for}")
+    print(f"Parameters: {config.parameters}")
 ```
 
 ---
@@ -232,7 +298,7 @@ client = DiffronClient(model="your-model-name")
 ┌─────────────────────────────────────────────────────────┐
 │ 4. Hook calls Lemonade API                              │
 │    - URL: http://localhost:8020/api/v1                  │
-│    - Model: qwen2.5-it-3b-FLM                           │
+│    - Model: qwen3.5-0.8b-gguf (default)                 │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -254,7 +320,7 @@ client = DiffronClient(model="your-model-name")
 
 ```bash
 # Start Lemonade
-lemonade serve qwen2.5-it-3b-FLM
+lemonade serve qwen3.5-0.8b-gguf
 
 # Verify URL
 echo %LEMONADE_SERVER_URL%
@@ -277,10 +343,28 @@ python -c "from diffron.git_hooks import install_hooks; install_hooks(global_ins
 
 ```bash
 # Download model
-lemonade pull qwen2.5-it-3b-FLM
+lemonade pull qwen3.5-0.8b-gguf
 
 # Verify model name
-set DIFFRON_MODEL=qwen2.5-it-3b-FLM
+diffron-setup-model --list
+```
+
+### Wrong Model Being Used
+
+**Symptom:** Logs show old model name despite installation.
+
+**Cause:** `DIFFRON_MODEL` environment variable overrides the default.
+
+**Solution:**
+```bash
+# Check current value
+echo %DIFFRON_MODEL%
+
+# Reset to recommended
+diffron-setup-model --model qwen3.5-0.8b-gguf
+
+# Or remove override (uses default from curated models)
+diffron-setup-model
 ```
 
 See [docs/SETUP.md](docs/SETUP.md) for complete troubleshooting guide.

@@ -241,7 +241,7 @@ def main():
         "--version",
         "-V",
         action="version",
-        version="%(prog)s 0.1.0",
+        version="%(prog)s 0.1.3",
     )
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")

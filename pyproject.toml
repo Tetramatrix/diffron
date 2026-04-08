@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "diffron"
-version = "0.1.2"
+version = "0.1.3"
 description = "Git commit message and PR description generator using Lemonade"
 readme = "README.md"
 license = {text = "MIT"}
@@ -48,6 +48,7 @@ diffron-install-hooks = "diffron.cli:install_hooks_cli"
 diffron-uninstall-hooks = "diffron.cli:uninstall_hooks_cli"
 diffron-pr = "diffron.cli:pr_description_cli"
 diffron-status = "diffron.cli:status_cli"
+diffron-setup-model = "diffron.models:setup_model_cli"
 
 [project.urls]
 Homepage = "https://github.com/diffron/diffron"
@@ -55,7 +56,7 @@ Documentation = "https://github.com/diffron/diffron/docs"
 Repository = "https://github.com/diffron/diffron"
 
 [tool.setuptools.packages.find]
-exclude = ["tests"]
+exclude = ["tests", "homelab*"]
 
 [tool.setuptools.package-data]
 diffron = ["py.typed"]

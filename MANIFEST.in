@@ -8,6 +8,8 @@ recursive-include diffron *.py *.pyi py.typed
 recursive-include diffron/hooks *
 recursive-include docs *.md
 
+# Exclude private files
+exclude homelab/
 exclude tests
 exclude hooks
 exclude *.bat

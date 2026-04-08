@@ -2,7 +2,7 @@
 
 Complete installation guide for Diffron on Windows with AMD Lemonade and GitHub Desktop.
 
-**Diffron is a production-ready reference implementation of the lemonade-python-sdk — submitted to the AMD Lemonade Developer Challenge 2026.**
+**Diffron is a demo project showcasing the lemonade-python-sdk - submitted to the AMD Lemonade Developer Challenge 2026.**
 
 ---
 

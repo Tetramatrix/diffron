@@ -17,6 +17,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.3] - 2026-04-08
+
+### Added
+- **Curated Models System** — Pre-configured model collection with easy selection
+  - `list_available_models()` — List all curated models with metadata
+  - `get_default_model()` — Get the recommended default model
+  - `get_model_config(name)` — Get configuration for a specific model by name
+  - `diffron-setup-model` CLI — Interactive model selection and configuration
+    - `diffron-setup-model` — Set default model
+    - `diffron-setup-model --list` — Show all available models
+    - `diffron-setup-model --model NAME` — Set specific model
+  - `ModelConfig` dataclass — Structured model metadata (name, description, parameters, best_for)
+
+### Changed
+- Updated metadata and documentation for public PyPI release
+- Moved private files (docs, tests, scripts, notes) to `homelab/` folder
+- Improved sync script exclusion patterns
+
+---
+
 ## [0.1.0] - 2026-03-28
 
 ### Added
