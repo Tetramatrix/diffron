@@ -9,26 +9,26 @@ import sys
 from typing import Optional
 
 
-def install_hooks_cli():
+def install_hooks_cli(args: Optional[argparse.Namespace] = None):
     """CLI entry point for installing Git hooks."""
-    parser = argparse.ArgumentParser(
-        description="Install Diffron Git hooks to a repository."
-    )
-    parser.add_argument(
-        "--global",
-        dest="global_install",
-        action="store_true",
-        help="Install hooks globally for all repositories.",
-    )
-    parser.add_argument(
-        "--repo",
-        "-r",
-        type=str,
-        default=".",
-        help="Path to the git repository (default: current directory).",
-    )
-
-    args = parser.parse_args()
+    if args is None:
+        parser = argparse.ArgumentParser(
+            description="Install Diffron Git hooks to a repository."
+        )
+        parser.add_argument(
+            "--global",
+            dest="global_install",
+            action="store_true",
+            help="Install hooks globally for all repositories.",
+        )
+        parser.add_argument(
+            "--repo",
+            "-r",
+            type=str,
+            default=".",
+            help="Path to the git repository (default: current directory).",
+        )
+        args = parser.parse_args()
 
     from .git_hooks import install_hooks
 
@@ -54,26 +54,26 @@ def install_hooks_cli():
         sys.exit(1)
 
 
-def uninstall_hooks_cli():
+def uninstall_hooks_cli(args: Optional[argparse.Namespace] = None):
     """CLI entry point for uninstalling Git hooks."""
-    parser = argparse.ArgumentParser(
-        description="Remove Diffron Git hooks from a repository."
-    )
-    parser.add_argument(
-        "--global",
-        dest="global_install",
-        action="store_true",
-        help="Remove global hooks configuration.",
-    )
-    parser.add_argument(
-        "--repo",
-        "-r",
-        type=str,
-        default=".",
-        help="Path to the git repository (default: current directory).",
-    )
-
-    args = parser.parse_args()
+    if args is None:
+        parser = argparse.ArgumentParser(
+            description="Remove Diffron Git hooks from a repository."
+        )
+        parser.add_argument(
+            "--global",
+            dest="global_install",
+            action="store_true",
+            help="Remove global hooks configuration.",
+        )
+        parser.add_argument(
+            "--repo",
+            "-r",
+            type=str,
+            default=".",
+            help="Path to the git repository (default: current directory).",
+        )
+        args = parser.parse_args()
 
     from .git_hooks import uninstall_hooks
 
@@ -99,32 +99,32 @@ def uninstall_hooks_cli():
         sys.exit(1)
 
 
-def pr_description_cli():
+def pr_description_cli(args: Optional[argparse.Namespace] = None):
     """CLI entry point for generating PR descriptions."""
-    parser = argparse.ArgumentParser(
-        description="Generate GitHub PR title and description."
-    )
-    parser.add_argument(
-        "--branch",
-        "-b",
-        type=str,
-        default=None,
-        help="Branch to analyze (default: current branch).",
-    )
-    parser.add_argument(
-        "--base",
-        type=str,
-        default=None,
-        help="Base branch to compare against (default: main/master).",
-    )
-    parser.add_argument(
-        "--create",
-        "-c",
-        action="store_true",
-        help="Automatically create PR on GitHub (requires gh CLI).",
-    )
-
-    args = parser.parse_args()
+    if args is None:
+        parser = argparse.ArgumentParser(
+            description="Generate GitHub PR title and description."
+        )
+        parser.add_argument(
+            "--branch",
+            "-b",
+            type=str,
+            default=None,
+            help="Branch to analyze (default: current branch).",
+        )
+        parser.add_argument(
+            "--base",
+            type=str,
+            default=None,
+            help="Base branch to compare against (default: main/master).",
+        )
+        parser.add_argument(
+            "--create",
+            "-c",
+            action="store_true",
+            help="Automatically create PR on GitHub (requires gh CLI).",
+        )
+        args = parser.parse_args()
 
     from .pr_gen import generate_pr_description, create_github_pr
     from .lemonade import is_lemonade_running
@@ -169,26 +169,26 @@ def pr_description_cli():
         sys.exit(130)
 
 
-def status_cli():
+def status_cli(args: Optional[argparse.Namespace] = None):
     """CLI entry point for checking Lemonade and hooks status."""
-    parser = argparse.ArgumentParser(
-        description="Check Diffron status (Lemonade connection, hooks installation)."
-    )
-    parser.add_argument(
-        "--repo",
-        "-r",
-        type=str,
-        default=".",
-        help="Path to the git repository (default: current directory).",
-    )
-    parser.add_argument(
-        "--verbose",
-        "-v",
-        action="store_true",
-        help="Show detailed status information.",
-    )
-
-    args = parser.parse_args()
+    if args is None:
+        parser = argparse.ArgumentParser(
+            description="Check Diffron status (Lemonade connection, hooks installation)."
+        )
+        parser.add_argument(
+            "--repo",
+            "-r",
+            type=str,
+            default=".",
+            help="Path to the git repository (default: current directory).",
+        )
+        parser.add_argument(
+            "--verbose",
+            "-v",
+            action="store_true",
+            help="Show detailed status information.",
+        )
+        args = parser.parse_args()
 
     from .lemonade import detect_lemonade_port, is_lemonade_running
     from .git_hooks import get_hooks_status, is_hooks_installed
@@ -331,13 +331,13 @@ def main():
     args = parser.parse_args()
 
     if args.command == "install-hooks":
-        install_hooks_cli()
+        install_hooks_cli(args)
     elif args.command == "uninstall-hooks":
-        uninstall_hooks_cli()
+        uninstall_hooks_cli(args)
     elif args.command == "pr":
-        pr_description_cli()
+        pr_description_cli(args)
     elif args.command == "status":
-        status_cli()
+        status_cli(args)
     else:
         parser.print_help()
         sys.exit(0)

@@ -42,7 +42,7 @@ AVAILABLE_MODELS: List[ModelConfig] = [
         is_default=True,
     ),
     ModelConfig(
-        name="qwen3.5-0.8b-gguf",
+        name="Qwen3.5-0.8B-GGUF",
         description="Qwen 3.5 — lightweight and fast, low resource usage",
         parameters="0.8B",
         best_for="Quick commits, low-resource PCs, fast iteration",
@@ -95,13 +95,18 @@ def get_model_config(model_name: str) -> Optional[ModelConfig]:
     Get configuration for a specific model by name.
 
     Args:
-        model_name: Model name (e.g., 'qwen3.5-0.8b-gguf').
+        model_name: Model name (e.g., 'Qwen3.5-0.8B-GGUF').
 
     Returns:
         ModelConfig if found, None otherwise.
     """
+    # Exact match first
     for model in AVAILABLE_MODELS:
         if model.name == model_name:
+            return model
+    # Case-insensitive fallback
+    for model in AVAILABLE_MODELS:
+        if model.name.lower() == model_name.lower():
             return model
     return None
 
@@ -151,7 +156,7 @@ def setup_model_cli():
         sys.exit(0)
 
     if args.model:
-        # Validate model name
+        # Validate model name (case-insensitive)
         config = get_model_config(args.model)
         if config is None:
             available = ", ".join(m.name for m in AVAILABLE_MODELS)
@@ -159,7 +164,7 @@ def setup_model_cli():
             print(f"Available models: {available}", file=sys.stderr)
             sys.exit(1)
 
-        # Set DIFFRON_MODEL environment variable permanently
+        # Use the canonical name from config (not user input)
         os.environ["DIFFRON_MODEL"] = config.name
 
         try:

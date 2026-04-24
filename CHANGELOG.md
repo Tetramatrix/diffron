@@ -17,6 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.4] - 2026-04-24
+
+### Fixed
+- **Lemonade Model Unresponsive Fix** — Added retry logic with automatic model unload/reload when Lemonade model becomes unresponsive
+- Added `_reload_model()` method that uses lemonade-python-sdk to detect and reconnect to the Lemonade server
+- Added `_init_client()` method to reinitialize the OpenAI client after model reload
+- Handles `'NoneType' object is not subscriptable` error by checking for None responses before accessing `response.choices[0]`
+- Retry mechanism attempts up to 3 times before raising a detailed RuntimeError
+- Added `from urllib.parse import urlparse` import at module level
+
+---
+
 ## [0.1.3] - 2026-04-08
 
 ### Added
