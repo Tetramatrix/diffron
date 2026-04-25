@@ -229,7 +229,10 @@ class LemonadeClient:
                 )
                 if new_port and new_port != self._port:
                     self._port = new_port
-                    # Reinitialize client with new port
+                    self.port = new_port  # Update the port attribute
+                    # Rebuild the base_url with the new port and the same host
+                    self.base_url = f"http://{self.host}:{new_port}"
+                    # Reinitialize client with new base_url
                     self._init_client()
         except Exception:
             # Silently continue on reload failure
