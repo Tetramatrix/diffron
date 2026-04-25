@@ -10,7 +10,7 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="diffron",
-    version="0.1.4",
+    version="0.1.5",
     author="Diffron Contributors",
     author_email="diffron@example.com",
     description="Git commit message and PR description generator using Lemonade",

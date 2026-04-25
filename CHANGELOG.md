@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned
-- Pre-commit hook for linting suggestions
-- Custom model selection per repository
-- Multi-language commit message support
-- Integration with GitHub CLI for auto PR creation
+### Added
+**Robust Model Reload Fix** — Properly unload and reload Lemonade model using SDK's native methods when unresponsive
+- Fixed `'NoneType' object is not subscriptable` error by using `_LemonadeSDKClient` for server operations
+- Uses `sdk_client.unload_model()` followed by `sdk_client.load_model(model_name=self.model)` for true server restart
+- Added 0.5 second delay between unload and load for clean server state
+- Renamed SDK import to `_LemonadeSDKClient` to avoid naming conflicts with diffron's own `LemonadeClient` class
 
 ---
 

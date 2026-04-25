@@ -411,4 +411,4 @@ pytest tests/
 
 ---
 
-*Version: 0.1.0 | Last updated: 2026-03-28*
+*Version: 0.1.6 | Last updated: 2026-04-25*
