@@ -56,7 +56,9 @@ def detect_lemonade_port(
     # Use SDK for verification
     h = host or os.environ.get("DIFFRON_LEMONADE_HOST") or DEFAULT_HOST
     p = ports or DEFAULT_PORTS
-    return verify_lemonade_server(hostname=h, ports=p)
+    for port in p:
+        if verify_lemonade_server(port, h):
+            return port
 
 
 class LemonadeClient:
@@ -188,3 +190,52 @@ class LemonadeClient:
 
     def __repr__(self) -> str:
         return f"LemonadeClient(base_url={self.base_url}, model={self.model})"
+def is_lemonade_running(
+    host: Optional[str] = None,
+    port: Optional[int] = None,
+) -> bool:
+    """Check if Lemonade server is running.
+
+    Args:
+        host: Host to check. Defaults to DIFFRON_LEMONADE_HOST or localhost.
+        port: Port to check. Defaults to auto-detection.
+
+    Returns:
+        True if Lemonade server is running, False otherwise.
+    """
+    try:
+        detected_port = detect_lemonade_port(host=host)
+        if detected_port is not None:
+            return True
+    except Exception:
+        pass
+
+    # Fallback: check default port
+    try:
+        return is_port_open(DEFAULT_HOST, DEFAULT_PORT)
+    except Exception:
+        return False
+
+
+def get_lemonade_url(
+    host: Optional[str] = None,
+    port: Optional[int] = None,
+) -> str:
+    """Get the Lemonade server URL.
+
+    Auto-detects port if not provided.
+
+    Args:
+        host: Host to use. Defaults to DIFFRON_LEMONADE_HOST or localhost.
+        port: Port to use. Auto-detects if None.
+
+    Returns:
+        The Lemonade server URL (e.g., http://localhost:8020).
+    """
+    h = host or os.environ.get("DIFFRON_LEMONADE_HOST") or DEFAULT_HOST
+
+    if port is None:
+        detected = detect_lemonade_port(host=h)
+        port = detected or DEFAULT_PORT
+
+    return f"http://{h}:{port}"

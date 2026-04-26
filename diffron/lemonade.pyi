@@ -64,3 +64,8 @@ class LemonadeClient:
 
     def __repr__(self) -> str:
         ...
+def get_lemonade_url(
+    host: Optional[str] = None,
+    port: Optional[int] = None,
+) -> str:
+    """Get the Lemonade server URL."""

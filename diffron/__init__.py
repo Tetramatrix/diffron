@@ -17,7 +17,7 @@ from .models import (
     get_model_config,
 )
 
-__version__ = "0.1.3"
+__version__ = "0.1.8"
 __author__ = "Diffron Contributors"
 __all__ = [
     "DiffronClient",
