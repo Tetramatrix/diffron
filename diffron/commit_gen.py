@@ -28,8 +28,8 @@ COMMIT_TYPES = [
 ]
 
 DEFAULT_MAX_CHARS = 4000
-DEFAULT_MAX_TOKENS = 100
-DEFAULT_TEMPERATURE = 0.2
+DEFAULT_MAX_TOKENS = 500
+DEFAULT_TEMPERATURE = 0.4
 
 
 def generate_commit_message(
@@ -45,8 +45,8 @@ def generate_commit_message(
     Args:
         diff: Git diff string. If None, gets staged diff automatically.
         max_chars: Maximum characters of diff to send. Defaults to 4000.
-        max_tokens: Maximum tokens to generate. Defaults to 100.
-        temperature: Sampling temperature. Defaults to 0.2.
+        max_tokens: Maximum tokens to generate. Defaults to 500.
+        temperature: Sampling temperature. Defaults to 0.4.
         client: LemonadeClient instance. Creates new one if not provided.
 
     Returns:
@@ -74,10 +74,38 @@ def generate_commit_message(
     # Build prompt
     commit_types = ", ".join(COMMIT_TYPES)
     prompt = (
-        f"Write a concise Git commit message in Conventional Commits format. "
-        f"Use one of these types: {commit_types}. "
-        f"Format: 'type: description' (e.g., 'feat: add user authentication'). "
-        f"Output ONLY the commit message, nothing else. No quotes, no explanations.\n\n"
+        f"Write a Git commit message following the Conventional Commits specification.\n\n"
+        f"Format:\n"
+        f"  type(scope): short summary\n"
+        f"\n"
+        f"  Optional body explaining what changed and why.\n"
+        f"  Use bullet points for multiple changes.\n"
+        f"  Wrap lines at 72 characters.\n\n"
+        f"Rules:\n"
+        f"- Use one of: {commit_types}\n"
+        f"- Scope is optional — use it when the change affects a specific module/component\n"
+        f"- The summary line should be imperative mood (\"add\" not \"added\"), max 72 chars\n"
+        f"- The body lists WHAT changed per file/area and WHY, not a diff walkthrough\n"
+        f"- Separate title from body with a blank line\n"
+        f"- If the change is trivial (single file, <10 lines), a title-only message is fine\n\n"
+        f"Examples:\n"
+        f"  feat(auth): add JWT token refresh logic\n"
+        f"\n"
+        f"  Implement automatic token refresh when the access token expires.\n"
+        f"  Uses a background thread to refresh 30 seconds before expiry,\n"
+        f"  preventing interrupted user sessions.\n"
+        f"\n"
+        f"  refactor(api): extract route handlers into separate modules\n"
+        f"\n"
+        f"  router.py:\n"
+        f"  - Move auth routes to auth_router.py\n"
+        f"  - Move user routes to user_router.py\n"
+        f"\n"
+        f"  Reduces router.py from 800 to 120 lines for easier maintenance.\n"
+        f"\n"
+        f"  fix(parser): handle empty input gracefully\n"
+        f"\n"
+        f"Output ONLY the commit message, nothing else.\n\n"
         f"Diff:\n{diff}"
     )
 
@@ -97,19 +125,24 @@ def generate_commit_message(
     commit_message = re.sub(r"<think>.*?</think>", "", commit_message, flags=re.DOTALL)
     commit_message = commit_message.replace("<think>", "").replace("</think>", "").strip()
 
-    # Remove any surrounding quotes
-    if commit_message.startswith('"') and commit_message.endswith('"'):
-        commit_message = commit_message[1:-1]
-    if commit_message.startswith("'") and commit_message.endswith("'"):
-        commit_message = commit_message[1:-1]
-
     # Remove markdown code blocks if present
     if commit_message.startswith("```"):
         lines = commit_message.split("\n")
-        commit_message = "\n".join(
-            line for line in lines
-            if not line.startswith("```")
-        ).strip()
+        # Find opening and closing ``` and strip them
+        start = 0
+        end = len(lines)
+        for i, line in enumerate(lines):
+            if line.strip().startswith("```") and i == 0:
+                start = 1
+            elif line.strip() == "```" and i > 0:
+                end = i
+                break
+        commit_message = "\n".join(lines[start:end]).strip()
+
+    # Remove surrounding quotes (only if entire message is wrapped)
+    if (commit_message.startswith('"') and commit_message.endswith('"')) or \
+       (commit_message.startswith("'") and commit_message.endswith("'")):
+        commit_message = commit_message[1:-1].strip()
 
     return commit_message
 
