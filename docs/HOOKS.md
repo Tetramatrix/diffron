@@ -26,6 +26,8 @@ Diffron uses Git's `prepare-commit-msg` hook to automatically generate commit me
 - **Automatic:** Runs on every `git commit`
 - **Non-blocking:** Commits still work if Lemonade is unavailable
 - **Smart:** Skips merges, rebases, and amends
+- **AI-Aware:** Skips when an AI coding agent is detected (Claude, Copilot, Cursor, Aider, Codex, Kilo, Mimo, etc.)
+- **Quality-aware:** Skips if the commit message already follows Conventional Commits
 - **Windows-native:** Designed for GitHub Desktop 3.5.5+
 
 ---
@@ -126,10 +128,12 @@ git config --global core.hooksPath "C:/Users/YourName/.diffron-hooks"
 │                  PYTHON HOOK (prepare-commit-msg.py)             │
 │         1. Parse arguments (msg_file, commit_source)             │
 │         2. Check if should skip (merge/squash/amend)             │
-│         3. Check if Lemonade is running                          │
-│         4. Get staged diff (git diff --cached)                   │
-│         5. Call Lemonade API for message generation              │
-│         6. Write generated message to msg_file                   │
+│         3. Check if AI agent detected (skip if so)               │
+│         4. Check if message already well-formed (skip if so)     │
+│         5. Check if Lemonade is running                          │
+│         6. Get staged diff (git diff --cached)                   │
+│         7. Call Lemonade API for message generation              │
+│         8. Write generated message to msg_file                   │
 └─────────────────────────────────────────────────────────────────┘
                                 │
                                 ▼
@@ -324,6 +328,71 @@ The package is verified by PyPI's security measures. For maximum security, insta
 git clone https://github.com/diffron/diffron.git
 cd diffron
 pip install -e .
+```
+
+---
+
+## AI Agent Detection
+
+Diffron automatically detects when an AI coding agent is making a commit and skips message generation, since the agent already produces good messages.
+
+### Detection Layers
+
+**1. Environment Variable Scanning**
+
+Scans ALL env var names for known AI agent keywords. If any env var name contains one of these keywords, Diffron skips:
+
+- `CLAUDE`, `ANTHROPIC` — Claude Code / Anthropic
+- `COPILOT`, `GITHUB_CODESPACES` — GitHub Copilot / Codespaces
+- `CURSOR` — Cursor
+- `AIDER` — Aider
+- `CODEX`, `OPENAI` — OpenAI Codex
+- `HERMES`, `MIMO`, `KILO`, `FREEBUFF`, `OPENCODE` — Other agents
+- `TABNEURON`, `SORANA`, `AICONO`, `DEVBROWSER` — Related projects
+- `AGENT`, `BOT` — Generic AI patterns
+
+**2. Git Config Detection**
+
+Checks `git config user.name` and `git config user.email` for AI agent patterns (e.g., "Claude", "Copilot", "Aider", "ai@anthropic.com").
+
+**3. Commit Message Quality**
+
+If the existing message already follows Conventional Commits format (e.g., `feat: add feature`), Diffron skips — no need to regenerate.
+
+### User-Configurable Patterns
+
+Add custom env var names to check:
+
+**Via environment variable:**
+```bash
+set DIFFRON_SKIP_PATTERNS=MY_AI_TOOL,DEV_BOT
+```
+
+**Via git config:**
+```bash
+git config diffron.skip-patterns "MY_AI_TOOL,DEV_BOT"
+```
+
+These are **additive** — the built-in patterns always apply.
+
+### Check Detection Status
+
+```bash
+diffron status
+```
+
+Shows whether an AI agent is currently detected.
+
+### Test Detection Manually
+
+```bash
+# Simulate AI agent
+set CLAUDE_CODE_SESSION=1
+diffron status  # Shows "AI agent detected"
+
+# Remove simulation
+set CLAUDE_CODE_SESSION=
+diffron status  # Shows "No AI agent detected"
 ```
 
 ---
