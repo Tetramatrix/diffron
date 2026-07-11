@@ -6,6 +6,7 @@ from typing import Optional
 from .lemonade import LemonadeClient
 from .commit_gen import generate_commit_message
 from .pr_gen import generate_pr_description, PRDescription
+from .agent_detect import is_ai_agent_commit, is_well_formed_commit
 
 
 class DiffronClient:

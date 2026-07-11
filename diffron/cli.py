@@ -192,6 +192,7 @@ def status_cli(args: Optional[argparse.Namespace] = None):
 
     from .lemonade import detect_lemonade_port, is_lemonade_running
     from .git_hooks import get_hooks_status, is_hooks_installed
+    from .agent_detect import is_ai_agent_commit
 
     # Check Lemonade status
     print("Lemonade Server:")
@@ -228,6 +229,13 @@ def status_cli(args: Optional[argparse.Namespace] = None):
             print("  ✗ Not installed")
             print("    Install with: diffron-install-hooks")
 
+    # Check AI agent detection status
+    print("\nAI Agent Detection:")
+    if is_ai_agent_commit():
+        print("  ✓ AI agent detected — Diffron will skip this commit")
+    else:
+        print("  ✗ No AI agent detected — Diffron will generate message")
+
     sys.exit(0)
 
 
@@ -241,7 +249,7 @@ def main():
         "--version",
         "-V",
         action="version",
-        version="%(prog)s 0.1.3",
+        version=f"%(prog)s {__import__('diffron').__version__}",
     )
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")

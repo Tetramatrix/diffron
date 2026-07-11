@@ -63,6 +63,24 @@ def main():
     if commit_source in skip_sources:
         sys.exit(0)
 
+    # Skip if an AI coding agent is detected
+    try:
+        from diffron.agent_detect import is_ai_agent_commit, is_well_formed_commit
+        if is_ai_agent_commit():
+            sys.exit(0)
+    except ImportError:
+        pass
+
+    # Skip if the existing message is already well-formed
+    if commit_source == "message":
+        try:
+            with open(commit_msg_file, "r", encoding="utf-8") as f:
+                existing_msg = f.read().strip()
+            if existing_msg and is_well_formed_commit(existing_msg):
+                sys.exit(0)
+        except Exception:
+            pass
+
     # Change to the repository directory (where git commit was run)
     repo_dir = os.path.dirname(os.path.abspath(commit_msg_file))
     # Navigate up from .git/COMMIT_EDITMSG to repo root

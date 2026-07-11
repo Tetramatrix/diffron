@@ -4,10 +4,10 @@ Git commit message and PR description generator using AMD Lemonade via lemonade-
 
 **Diffron is a production-ready reference implementation of the lemonade-python-sdk — submitted to the AMD Lemonade Developer Challenge 2026.**
 
-![Version](https://img.shields.io/badge/version-0.1.6-blue)
+![Version](https://img.shields.io/badge/version-0.1.9-blue)
 ![Python](https://img.shields.io/badge/python-3.9+-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey)
 
 ---
 
@@ -16,9 +16,10 @@ Git commit message and PR description generator using AMD Lemonade via lemonade-
 - 🤖 **Auto Commit Messages** - Generates Conventional Commits format messages from your staged changes
 - 📝 **PR Descriptions** - Creates detailed PR titles and descriptions from branch diffs
 - 🔌 **Lemonade Integration** - Works with your local Lemonade LLM server (no cloud required)
-- 🪟 **Windows Ready** - Fully compatible with GitHub Desktop 3.5.5+ hooks support
+- 🪟 **Cross-Platform** - Works on Windows, Linux, and macOS with GitHub Desktop 3.5.5+ support
 - ⚡ **Auto-Detection** - Automatically finds your running Lemonade instance
 - 🎯 **Curated Models** - Easy model selection with recommended models for different tasks
+- 🧠 **AI-Aware** - Automatically skips when AI coding agents (Claude, Copilot, Cursor, Aider, MiMo, Kilo, Qwen, etc.) are making commits
 
 ---
 
@@ -48,14 +49,28 @@ pip install lemonade-sdk
 ### 3. Configure Environment
 
 **Set Lemonade Server URL (Permanent):**
-1. System Properties → Environment Variables
-2. New User Variable:
-   - Name: `LEMONADE_SERVER_URL`
-   - Value: `http://localhost:8020`
+
+Windows:
+```cmd
+setx LEMONADE_SERVER_URL http://localhost:8020
+```
+
+Linux/macOS:
+```bash
+echo 'export LEMONADE_SERVER_URL="http://localhost:8020"' >> ~/.bashrc
+source ~/.bashrc
+```
 
 **Or Temporary (current session):**
+
+Windows:
 ```cmd
 set LEMONADE_SERVER_URL=http://localhost:8020
+```
+
+Linux/macOS:
+```bash
+export LEMONADE_SERVER_URL=http://localhost:8020
 ```
 
 ### 4. Install Diffron
@@ -100,13 +115,15 @@ print(f"Default: {default.name}")
 
 **Or manually via environment variable:**
 
+Windows:
 ```cmd
-# Temporary (current session)
-set DIFFRON_MODEL=qwen3.5-0.8b-gguf
+setx DIFFRON_MODEL "qwen3.5-0.8b-gguf"
+```
 
-# Permanent (System Properties → Environment Variables)
-# Name: DIFFRON_MODEL
-# Value: qwen3.5-0.8b-gguf
+Linux/macOS:
+```bash
+echo 'export DIFFRON_MODEL="qwen3.5-0.8b-gguf"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ### 5. Install Git Hooks
@@ -163,8 +180,11 @@ python -c "from diffron.git_hooks import install_hooks; install_hooks(global_ins
 # Generate PR description
 python -c "from diffron import generate_pr_description; pr = generate_pr_description(); print(pr.format_output())"
 
-# Check status
-python -c "from diffron import is_lemonade_running, is_hooks_installed; print('Lemonade:', is_lemonade_running()); print('Hooks:', is_hooks_installed(check_global=True))"
+# Check status (Lemonade, hooks, AI agent detection)
+diffron status
+
+# Check if AI agent is detected
+python -c "from diffron import is_ai_agent_commit; print('AI agent:', is_ai_agent_commit())"
 ```
 
 ### Python API
@@ -196,6 +216,102 @@ client.install_hooks(global_install=True)
 4. Click "Commit to main"
 5. **Diffron replaces** your message with AI-generated message
 
+### AI Agent Detection
+
+Diffron automatically detects when an AI coding agent (Claude, Copilot, Cursor, Aider, Codex, Kilo, Mimo, Hermes, OpenCode, FreeBuff, etc.) is making a commit and **skips** message generation — the agent already produces good messages.
+
+**Check detection status:**
+
+```bash
+diffron status
+```
+
+Output:
+```
+AI Agent Detection:
+  ✓ AI agent detected — Diffron will skip this commit
+```
+
+**How it works (3 layers):**
+
+1. **Environment variables** — Scans all env vars for AI agent keywords (`CLAUDE`, `COPILOT`, `CURSOR`, `AIDER`, `CODEX`, `OPENAI`, `AGENT`, `BOT`, etc.)
+2. **Git config** — Checks `user.name` and `user.email` for AI patterns (e.g., "Claude", "Copilot", "ai@anthropic.com")
+3. **Message quality** — If the commit message already follows Conventional Commits format (`feat:`, `fix:`, etc.), Diffron skips
+
+**Add custom detection patterns:**
+
+Windows:
+```cmd
+set DIFFRON_SKIP_PATTERNS=MY_AI_TOOL,DEV_BOT
+```
+
+Linux/macOS:
+```bash
+export DIFFRON_SKIP_PATTERNS=MY_AI_TOOL,DEV_BOT
+```
+
+**Or via git config:**
+
+```bash
+git config diffron.skip-patterns "MY_AI_TOOL,DEV_BOT"
+```
+
+**Test it manually:**
+
+Windows:
+```cmd
+set CLAUDE_CODE_SESSION=1
+diffron status
+```
+
+Linux/macOS:
+```bash
+CLAUDE_CODE_SESSION=1 diffron status
+```
+
+**Python API:**
+
+```python
+from diffron import (
+    is_ai_agent_commit,
+    is_well_formed_commit,
+    list_known_agents,
+    list_agent_names,
+    get_agents_by_type,
+)
+
+# Check if AI agent is detected
+if is_ai_agent_commit():
+    print("Skipping — AI agent detected")
+
+# Check if message is already good
+if is_well_formed_commit("feat: add new feature"):
+    print("Skipping — message already follows Conventional Commits")
+
+# List all known AI agents
+agents = list_known_agents()
+for agent in agents:
+    print(f"{agent['name']} ({agent['type']})")
+
+# List just the names
+print(list_agent_names())
+
+# Get agents by type
+cli_agents = get_agents_by_type("cli")   # CLI coding agents
+gui_agents = get_agents_by_type("gui")   # IDE/GUI plugins
+cloud_agents = get_agents_by_type("cloud")  # Cloud environments
+agent_frameworks = get_agents_by_type("agent")  # Agent frameworks
+```
+
+**Known agents in the registry:**
+
+| Category | Agents |
+|----------|--------|
+| **CLI** | Claude Code, Copilot CLI, Aider, Codex CLI, Amazon Q, Cline, Windsurf, Continue.dev, Tabnine, Cody, Augment, MarsCode, PearAI, Void, Supermaven, MiMo Code, Kilo Code, Hermes, FreeBuff, OpenCode, Qwen Coder |
+| **GUI** | Cursor, Windsurf IDE, Copilot (VS Code), Cline (VS Code), Continue.dev (VS Code), Tabnine, Amazon Q (VS Code), Cody (VS Code), MarsCode, JetBrains AI |
+| **Cloud** | GitHub Codespaces, GitPod, Replit |
+| **Agent** | Devin, SWE-agent, OpenHands, AutoCodeRover, Mintlify |
+
 ---
 
 ## Configuration
@@ -207,6 +323,7 @@ client.install_hooks(global_install=True)
 | `LEMONADE_SERVER_URL` | `http://localhost:8020` | Lemonade server URL |
 | `DIFFRON_MODEL` | `qwen2.5-it-3b-FLM` | Model name to use |
 | `DIFFRON_MAX_DIFF_CHARS` | `4000` | Max diff characters |
+| `DIFFRON_SKIP_PATTERNS` | *(empty)* | Comma-separated env var names to check for AI agent detection |
 
 ### Curated Models
 
@@ -227,9 +344,19 @@ diffron-setup-model --model qwen3.5-0.8b-gguf
 
 # List available models
 diffron-setup-model --list
+```
 
-# Or manually (system-wide)
+Or manually:
+
+Windows:
+```cmd
 setx DIFFRON_MODEL "qwen3.5-0.8b-gguf"
+```
+
+Linux/macOS:
+```bash
+echo 'export DIFFRON_MODEL="qwen3.5-0.8b-gguf"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ### Python API
@@ -292,22 +419,29 @@ if config:
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│ 3. Hook reads staged diff: git diff --cached            │
+│ 3. Hook checks for skip conditions:                     │
+│    - Merge / rebase / amend → skip                      │
+│    - AI agent detected → skip                           │
+│    - Message already well-formed → skip                 │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│ 4. Hook calls Lemonade API                              │
+│ 4. Hook reads staged diff: git diff --cached            │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│ 5. Hook calls Lemonade API                              │
 │    - URL: http://localhost:8020/api/v1                  │
 │    - Model: qwen3.5-0.8b-gguf (default)                 │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│ 5. AI generates Conventional Commit message             │
+│ 6. AI generates Conventional Commit message             │
 │    - "feat: add user authentication module"             │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
-│ 6. Git opens editor with generated message              │
+│ 7. Git opens editor with generated message              │
 │    - User can review/modify before saving               │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -323,7 +457,8 @@ if config:
 lemonade serve qwen3.5-0.8b-gguf
 
 # Verify URL
-echo %LEMONADE_SERVER_URL%
+echo $LEMONADE_SERVER_URL  # Linux/macOS
+echo %LEMONADE_SERVER_URL%  # Windows
 ```
 
 ### Hooks Not Working
@@ -356,9 +491,11 @@ diffron-setup-model --list
 **Cause:** `DIFFRON_MODEL` environment variable overrides the default.
 
 **Solution:**
+
 ```bash
 # Check current value
-echo %DIFFRON_MODEL%
+echo $DIFFRON_MODEL  # Linux/macOS
+echo %DIFFRON_MODEL%  # Windows
 
 # Reset to recommended
 diffron-setup-model --model qwen3.5-0.8b-gguf
@@ -368,6 +505,21 @@ diffron-setup-model
 ```
 
 See [docs/SETUP.md](docs/SETUP.md) for complete troubleshooting guide.
+
+### Diffron Not Generating Messages (AI Agent Detected)
+
+**Symptom:** `git commit` works but Diffron doesn't generate a message.
+
+**Cause:** An AI agent environment variable is detected (e.g., `CLAUDE_CODE_SESSION`, `CURSOR_SESSION_ID`).
+
+**Solution:**
+```bash
+# Check what's being detected
+diffron status
+
+# If false positive, add the env var to exclude list
+# (or unset the triggering env var)
+```
 
 ---
 
@@ -411,4 +563,4 @@ pytest tests/
 
 ---
 
-*Version: 0.1.6 | Last updated: 2026-04-25*
+*Version: 0.1.9 | Last updated: 2026-07-11*

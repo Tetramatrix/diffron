@@ -10,6 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **AI Agent Detection** — Diffron now automatically skips message generation when an AI coding agent is detected
+  - Predefined registry of 35+ known AI agents (CLI, GUI, Cloud, Agent frameworks)
+  - Environment variable scanning: detects env vars from all registered agents
+  - Git config detection: checks user.name/email for AI agent patterns
+  - Commit message quality: skips if message already follows Conventional Commits format
+  - User-configurable: `DIFFRON_SKIP_PATTERNS` env var and `git config diffron.skip-patterns`
+  - New functions: `is_ai_agent_commit()`, `is_well_formed_commit()`, `list_known_agents()`, `list_agent_names()`, `get_agents_by_type()`
+  - `diffron status` now shows AI agent detection status
+  - New `agent_detect.py` module with `agent_detect.pyi` type stub
+
 **Robust Model Reload Fix** — Properly unload and reload Lemonade model using SDK's native methods when unresponsive
 - Fixed `'NoneType' object is not subscriptable` error by using `_LemonadeSDKClient` for server operations
 - Uses `sdk_client.unload_model()` followed by `sdk_client.load_model(model_name=self.model)` for true server restart

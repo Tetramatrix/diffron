@@ -8,6 +8,7 @@ from .lemonade import LemonadeClient, detect_lemonade_port
 from .commit_gen import generate_commit_message
 from .pr_gen import generate_pr_description, PRDescription
 from .git_hooks import install_hooks, uninstall_hooks, is_hooks_installed
+from .agent_detect import is_ai_agent_commit, is_well_formed_commit
 
 
 class DiffronClient:

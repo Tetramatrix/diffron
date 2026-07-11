@@ -73,7 +73,7 @@ class LemonadeClient:
         host: Optional[str] = None,
         port: Optional[int] = None,
         api_key: str = LEMONADE_API_KEY,
-        model: str = DEFAULT_MODEL,
+        model: Optional[str] = None,
     ) -> None:
         """Initialize Lemonade client.
 
@@ -81,11 +81,12 @@ class LemonadeClient:
             host: Host of the Lemonade server. Defaults to env or localhost.
             port: Port of the Lemonade server. Auto-detects if None.
             api_key: API key for the server.
-            model: Model name to use for inference.
+            model: Model name to use for inference. Defaults to DIFFRON_MODEL
+                   env var, then DEFAULT_MODEL.
         """
         self.host = host or os.environ.get("DIFFRON_LEMONADE_HOST") or DEFAULT_HOST
         self.api_key = api_key
-        self.model = model
+        self.model = model or os.environ.get("DIFFRON_MODEL") or DEFAULT_MODEL
 
         # Auto-detect port if not provided
         if port:

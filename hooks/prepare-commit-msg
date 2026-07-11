@@ -1,13 +1,21 @@
 #!/bin/sh
-# Diffron prepare-commit-msg hook wrapper for Windows (Git Bash)
+# Diffron prepare-commit-msg hook wrapper (cross-platform)
 # This file should be placed in .git/hooks/prepare-commit-msg (no extension)
 
 # Get the directory where this wrapper script is located (Unix-style path)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-# Convert Unix path to Windows path for Python using cygpath
-# Git Bash on Windows uses /d/... but Windows needs D:\...
-PYTHON_SCRIPT="$(cygpath -w "$SCRIPT_DIR/prepare-commit-msg.py" 2>/dev/null || echo "$SCRIPT_DIR/prepare-commit-msg.py")"
+# Detect OS and resolve Python script path
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*)
+        # Windows (Git Bash): convert Unix path to Windows path
+        PYTHON_SCRIPT="$(cygpath -w "$SCRIPT_DIR/prepare-commit-msg.py" 2>/dev/null || echo "$SCRIPT_DIR/prepare-commit-msg.py")"
+        ;;
+    *)
+        # Linux/macOS: use path as-is
+        PYTHON_SCRIPT="$SCRIPT_DIR/prepare-commit-msg.py"
+        ;;
+esac
 
 # Run the Python script
 python "$PYTHON_SCRIPT" "$1" "$2"

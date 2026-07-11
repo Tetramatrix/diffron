@@ -61,7 +61,7 @@ AVAILABLE_MODELS: List[ModelConfig] = [
     ),
 ]
 
-DEFAULT_MODEL_NAME = "qwen2.5-it-3b-FLM"
+DEFAULT_MODEL_NAME = "Qwen3.5-0.8B-GGUF"
 
 
 def list_available_models() -> List[ModelConfig]:
@@ -167,19 +167,15 @@ def setup_model_cli():
         # Use the canonical name from config (not user input)
         os.environ["DIFFRON_MODEL"] = config.name
 
-        try:
-            import subprocess
-            subprocess.run(["setx", "DIFFRON_MODEL", config.name], check=True)
-            print(f"Model set to: {config.name} ⭐")
-            print(f"  {config.description}")
-            print(f"  Best for: {config.best_for}")
-            print()
+        success = _set_env_permanently("DIFFRON_MODEL", config.name)
+        print(f"Model set to: {config.name} ⭐")
+        print(f"  {config.description}")
+        print(f"  Best for: {config.best_for}")
+        print()
+        if success:
             print("Note: Restart your terminal for the change to take effect.")
-        except Exception as e:
-            # Fallback: just set for current session
-            print(f"Model set for current session: {config.name}")
-            print(f"Warning: Could not set permanently: {e}", file=sys.stderr)
-            print("Set manually: setx DIFFRON_MODEL", config.name)
+        else:
+            print("Set for current session only.")
 
         sys.exit(0)
 
@@ -187,17 +183,94 @@ def setup_model_cli():
     default = get_default_model()
     os.environ["DIFFRON_MODEL"] = default.name
 
-    try:
-        import subprocess
-        subprocess.run(["setx", "DIFFRON_MODEL", default.name], check=True)
-        print(f"Default model set to: {default.name} ⭐")
-        print(f"  {default.description}")
-        print(f"  Best for: {default.best_for}")
-        print()
+    success = _set_env_permanently("DIFFRON_MODEL", default.name)
+    print(f"Default model set to: {default.name} ⭐")
+    print(f"  {default.description}")
+    print(f"  Best for: {default.best_for}")
+    print()
+    if success:
         print("Note: Restart your terminal for the change to take effect.")
-    except Exception as e:
-        print(f"Default model for current session: {default.name}")
-        print(f"Warning: Could not set permanently: {e}", file=sys.stderr)
-        print("Set manually: setx DIFFRON_MODEL", default.name)
+    else:
+        print("Set for current session only.")
 
     sys.exit(0)
+
+
+def _set_env_permanently(name: str, value: str) -> bool:
+    """Set an environment variable permanently (cross-platform).
+
+    Windows: uses setx command.
+    Linux/macOS: writes to shell profile (~/.bashrc, ~/.zshrc, etc.).
+
+    Returns:
+        True if successful, False otherwise.
+    """
+    import subprocess
+    import sys
+    import os
+
+    if os.name == "nt":
+        # Windows: use setx
+        try:
+            subprocess.run(
+                ["setx", name, value],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            return True
+        except (subprocess.SubprocessError, FileNotFoundError):
+            return False
+    else:
+        # Linux/macOS: write to shell profile
+        home = os.path.expanduser("~")
+        export_line = f'export {name}="{value}"\n'
+
+        # Determine which shell profile to use
+        shell = os.environ.get("SHELL", "")
+        if "zsh" in shell:
+            profile = os.path.join(home, ".zshrc")
+        elif "fish" in shell:
+            profile = os.path.join(home, ".config", "fish", "config.fish")
+        else:
+            profile = os.path.join(home, ".bashrc")
+
+        try:
+            # Check if already set in profile
+            if os.path.exists(profile):
+                with open(profile, "r", encoding="utf-8") as f:
+                    if f"export {name}=" in f.read():
+                        # Update existing line
+                        lines = f.readlines() if False else []  # noqa: dummy
+                        _update_profile_var(profile, name, value)
+                        return True
+
+            # Append to profile
+            with open(profile, "a", encoding="utf-8") as f:
+                f.write(f"\n# Diffron - set by diffron-setup-model\n")
+                f.write(export_line)
+            return True
+        except OSError:
+            return False
+
+
+def _update_profile_var(profile: str, name: str, value: str) -> None:
+    """Update an existing env var in a shell profile file."""
+    import re
+
+    with open(profile, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # Replace existing export line
+    pattern = rf'^export {re.escape(name)}=.*$'
+    replacement = f'export {name}="{value}"'
+    new_content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
+
+    if new_content == content:
+        # No existing line found, append
+        with open(profile, "a", encoding="utf-8") as f:
+            f.write(f'\nexport {name}="{value}"\n')
+    else:
+        with open(profile, "w", encoding="utf-8") as f:
+            f.write(new_content)
