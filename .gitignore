@@ -83,3 +83,4 @@ logs/
 
 # Private development files
 homelab/
+.agents.md
