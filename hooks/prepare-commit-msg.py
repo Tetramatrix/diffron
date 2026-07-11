@@ -63,17 +63,10 @@ def main():
     if commit_source in skip_sources:
         sys.exit(0)
 
-    # Skip if an AI coding agent is detected
-    try:
-        from diffron.agent_detect import is_ai_agent_commit, is_well_formed_commit
-        if is_ai_agent_commit():
-            sys.exit(0)
-    except ImportError:
-        pass
-
     # Skip if the existing message is already well-formed
     if commit_source == "message":
         try:
+            from diffron.agent_detect import is_well_formed_commit
             with open(commit_msg_file, "r", encoding="utf-8") as f:
                 existing_msg = f.read().strip()
             if existing_msg and is_well_formed_commit(existing_msg):
