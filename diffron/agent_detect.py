@@ -128,6 +128,13 @@ AI_AGENTS: List[Dict[str, object]] = [
         "git_names": ["supermaven"],
         "git_emails": ["supermaven"],
     },
+    {
+        "name": "Command Code",
+        "type": "cli",
+        "env_vars": ["COMMANDCODE", "COMMAND_CODE"],
+        "git_names": ["command code", "commandcode"],
+        "git_emails": ["commandcode"],
+    },
 
     # ── GUI-based AI coding agents / IDEs ────────────────────────────────
     {
